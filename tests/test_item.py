@@ -1,9 +1,9 @@
 import pytest
 from src.item import Item
 
-item1 = Item("Смартфон", 1000, 3)
-item2 = Item("Ноутбук", 2500, 2)
-item3 = Item("Микроволновка", 8000, 6)
+item1 = Item('Смартфон', 1000, 3)
+item2 = Item('Ноутбук', 2500, 2)
+item3 = Item('Микроволновка', 8000, 6)
 Item.pay_rate = 0.8
 
 
@@ -41,4 +41,14 @@ def test_string_to_number():
 def test_name():
     assert len(item2.name) <= 10
     assert len(item3.name) >= 10
+
+
+def test_str():
+    assert str(item3) == "Микроволновка"
+    assert str(item2) == "Ноутбук"
+    assert str(item1) == "Смартфон"
+
+
+def test_repr():
+    assert repr(item3) == "Item('Микроволновка', 8000, 6)"
 
