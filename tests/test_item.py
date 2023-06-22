@@ -1,9 +1,11 @@
 import pytest
 from src.item import Item
+from src.phone import Phone
 
 item1 = Item('Смартфон', 1000, 3)
 item2 = Item('Ноутбук', 2500, 2)
 item3 = Item('Микроволновка', 8000, 6)
+phone1 = Phone("Чайник", 1400, 8, 3)
 Item.pay_rate = 0.8
 
 
@@ -52,3 +54,7 @@ def test_str():
 def test_repr():
     assert repr(item3) == "Item('Микроволновка', 8000, 6)"
 
+
+def test_add():
+    assert item1 + phone1 == 11
+    assert item2 + phone1 == 10
