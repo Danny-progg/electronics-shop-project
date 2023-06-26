@@ -1,5 +1,6 @@
 import pytest
-from src.item import Item
+import os.path
+from src.item import Item, InstantiateCSVError
 from src.phone import Phone
 
 item1 = Item('Смартфон', 1000, 3)
@@ -58,3 +59,13 @@ def test_repr():
 def test_add():
     assert item1 + phone1 == 11
     assert item2 + phone1 == 10
+
+
+def test_instantiate_from_csv_file_not_found():
+    with pytest.raises(FileNotFoundError):
+        Item.instantiate_from_csv(default="items_not_found.csv")
+
+
+def test_instantiate_from_csv_invalid_data():
+    with pytest.raises(InstantiateCSVError):
+        Item.instantiate_from_csv(default=os.path.abspath('tests/test_items.csv'))

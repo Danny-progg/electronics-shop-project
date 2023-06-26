@@ -2,21 +2,17 @@ import os
 from csv import DictReader
 
 
+class InstantiateCSVError(Exception):
+    pass
+
+
 class Item:
-    """
-    Класс для представления товара в магазине.
-    """
     pay_rate = 1.0
     all = []
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = dir_path + '/items.csv'
 
     def __init__(self, name: str, price: float, quantity: int) -> None:
-        """
-                Создание экземпляра класса item.
-
-                :param name: Название товара.
-                :param price: Цена за единицу товара.
-                :param quantity: Количество товара в магазине.
-                """
         self.__name = name
         self.price = price
         self.quantity = quantity
@@ -29,17 +25,9 @@ class Item:
         return f'{self.__name}'
 
     def calculate_total_price(self):
-        """
-        Рассчитывает общую стоимость конкретного товара в магазине.
-
-        :return: Общая стоимость товара.
-        """
         return self.price * self.quantity
 
     def apply_discount(self):
-        """
-        Применяет установленную скидку для конкретного товара.
-        """
         self.price *= self.pay_rate
 
     @property
@@ -54,19 +42,22 @@ class Item:
             raise Exception('Длина товара превышает 10 символов')
 
     @classmethod
-    def instantiate_from_csv(cls) -> None:
-        """
-        Создает экземпляры класса на основе таблицы хранящейся в items.csv
-        """
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(dir_path + '/items.csv', encoding='utf-8') as csv_file:
-            csv_reader = DictReader(csv_file)
-            cls.all = []
-            for (row) in csv_reader:
-                name = row['name']
-                price = row['price']
-                quantity = row['quantity']
-                cls(name, float(price), int(quantity))
+    def instantiate_from_csv(cls, default=False) -> None:
+        try:
+            file_csv = default if default else cls.dir_path
+            with open(file_csv, encoding='utf-8') as csv_file:
+                csv_reader = DictReader(csv_file)
+                cls.all = []
+                for row in csv_reader:
+                    try:
+                        name = row['name']
+                        price = row['price']
+                        quantity = row['quantity']
+                        cls(name, float(price), int(quantity))
+                    except KeyError:
+                        raise InstantiateCSVError('Файл item.csv поврежден')
+        except FileNotFoundError:
+            raise FileNotFoundError("Отсутствует файл item.csv")
 
     @staticmethod
     def string_to_number(number: str) -> int:
@@ -82,6 +73,8 @@ class Item:
         if not isinstance(other, Item):
             raise ValueError('Складывать можно только объекты Item и дочерние от них.')
         return self.quantity + other.quantity
+
+
 
 
 
